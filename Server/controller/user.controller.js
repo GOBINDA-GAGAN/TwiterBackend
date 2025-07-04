@@ -1,0 +1,184 @@
+
+import dotenv from "dotenv";
+import bcryptjs from "bcryptjs";
+import jwt from "jsonwebtoken";
+import User from "../models/user.js";
+dotenv.config();
+
+export const signIn = async (req, res) => {
+  try {
+    const { email, password, username } = req.body;
+
+    // 1. Validation
+    if (!email || !password || !username) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required.",
+      });
+    }
+
+    // 2. Check if user already exists
+    const existingUser = await User.findOne({ email });
+
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: "User already registered",
+      });
+    }
+
+    // 3. Hash password
+    const hashPassword = await bcryptjs.hash(password, 10);
+
+    // 4. Create user
+    const newUser = await User.create({
+      username,
+      email,
+      password: hashPassword,
+    });
+
+    if (!newUser) {
+      return res.status(500).json({
+        success: false,
+        message: "User creation failed",
+      });
+    }
+
+    // 5. Generate JWT token
+    const accessToken = jwt.sign(
+      { id: newUser._id },
+      process.env.JWT_SECRET,
+      { expiresIn: "30d" }
+    );
+
+    // 6. Set cookie
+    res.cookie("token", accessToken, {
+      maxAge: 1000 * 60 * 60 * 24 * 30, // 30 days
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+    });
+
+    // 7. Send response
+    return res.status(201).json({
+      success: true,
+      message: "Sign-up successful",
+      user: {
+        _id: newUser._id,
+        email: newUser.email,
+        username: newUser.username,
+      },
+    });
+
+  } catch (error) {
+    console.error("Sign-in error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error in sign-in!",
+      error: error.message || "An unexpected error occurred.",
+    });
+  }
+};
+
+
+
+
+
+export const signUp = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const existingUser = await User.findOne({ email })
+    if (!existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: "User not found"
+      });
+
+    }
+
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Email and password are required."
+      });
+    }
+
+
+    const user = await User.findOne({ email });
+    if (!user || !(await bcryptjs.compare(password, user.password))) {
+      return res.status(401).json({ success: false, message: "Invalid credentials" });
+    }
+
+
+    const accessToken = jwt.sign(
+      { id: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: "30d" }
+    );
+
+
+    res.cookie("token", accessToken, {
+      maxAge: 1000 * 60 * 60 * 24 * 30, // 30 days
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Sign-in successful",
+      user
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Error in sign-up !",
+      error: error.message || "An unexpected error occurred."
+    });
+  }
+};
+
+export const profile = async (req, res) => {
+  try {
+    
+    const user = await User.findById(req.userId).select("-password");
+    res.status(200).json({
+      message:`welcome ${user.username}`,
+      user
+  })
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Error getting profile",
+      error: error.message || "An unexpected error occurred."
+    });
+  }
+ 
+};
+
+
+export const logout = async (req, res) => {
+  try {
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "None",
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Logged out successfully",
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Error in logout !",
+      error: error.message || "An unexpected error occurred."
+    });
+
+  }
+
+}
