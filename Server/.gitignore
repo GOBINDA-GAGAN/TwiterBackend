@@ -1,0 +1,51 @@
+# Node modules
+node_modules/
+
+# Environment files
+.env
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE settings
+.vscode/
+.idea/
+
+# Coverage reports
+coverage/
+
+# Compiled output
+dist/
+build/
+
+# Database files
+*.sqlite
+*.sqlite3
+*.db
+
+# Dependency directories
+jspm_packages/
+
+# Optional npm cache directory
+.npm/
+
+# Optional eslint cache
+.eslintcache
+
+# Debugging logs
+debug.log
+
+# Test coverage
+.nyc_output/
