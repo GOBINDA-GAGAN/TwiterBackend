@@ -1,8 +1,9 @@
-
 import dotenv from "dotenv";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/user.js";
+import Comment from "../models/comment.js";
+import Post from "../models/post.js";
 dotenv.config();
 
 export const signIn = async (req, res) => {
@@ -45,11 +46,9 @@ export const signIn = async (req, res) => {
     }
 
     // 5. Generate JWT token
-    const accessToken = jwt.sign(
-      { id: newUser._id },
-      process.env.JWT_SECRET,
-      { expiresIn: "30d" }
-    );
+    const accessToken = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
+      expiresIn: "30d",
+    });
 
     // 6. Set cookie
     res.cookie("token", accessToken, {
@@ -69,7 +68,6 @@ export const signIn = async (req, res) => {
         username: newUser.username,
       },
     });
-
   } catch (error) {
     console.error("Sign-in error:", error);
     return res.status(500).json({
@@ -80,43 +78,35 @@ export const signIn = async (req, res) => {
   }
 };
 
-
-
-
-
 export const signUp = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const existingUser = await User.findOne({ email })
+    const existingUser = await User.findOne({ email });
     if (!existingUser) {
       return res.status(400).json({
         success: false,
-        message: "User not found"
+        message: "User not found",
       });
-
     }
 
     if (!email || !password) {
       return res.status(400).json({
         success: false,
-        message: "Email and password are required."
+        message: "Email and password are required.",
       });
     }
 
-
     const user = await User.findOne({ email });
     if (!user || !(await bcryptjs.compare(password, user.password))) {
-      return res.status(401).json({ success: false, message: "Invalid credentials" });
+      return res
+        .status(401)
+        .json({ success: false, message: "Invalid credentials" });
     }
 
-
-    const accessToken = jwt.sign(
-      { id: user._id },
-      process.env.JWT_SECRET,
-      { expiresIn: "30d" }
-    );
-
+    const accessToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "30d",
+    });
 
     res.cookie("token", accessToken, {
       maxAge: 1000 * 60 * 60 * 24 * 30, // 30 days
@@ -128,36 +118,32 @@ export const signUp = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Sign-in successful",
-      user
+      user,
     });
-
   } catch (error) {
     return res.status(500).json({
       success: false,
       message: "Error in sign-up !",
-      error: error.message || "An unexpected error occurred."
+      error: error.message || "An unexpected error occurred.",
     });
   }
 };
 
 export const profile = async (req, res) => {
   try {
-    
     const user = await User.findById(req.userId).select("-password");
     res.status(200).json({
-      message:`welcome ${user.username}`,
-      user
-  })
+      message: `welcome ${user.username}`,
+      user,
+    });
   } catch (error) {
     return res.status(500).json({
       success: false,
       message: "Error getting profile",
-      error: error.message || "An unexpected error occurred."
+      error: error.message || "An unexpected error occurred.",
     });
   }
- 
 };
-
 
 export const logout = async (req, res) => {
   try {
@@ -171,14 +157,60 @@ export const logout = async (req, res) => {
       success: true,
       message: "Logged out successfully",
     });
-
   } catch (error) {
     return res.status(500).json({
       success: false,
       message: "Error in logout !",
-      error: error.message || "An unexpected error occurred."
+      error: error.message || "An unexpected error occurred.",
     });
-
   }
+};
 
-}
+export const profileById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return res.status(400).json({
+        message: "id is required",
+      });
+    }
+
+    const user = await User.findById(id)
+      .select("-password")
+      .populate("followers")
+      .populate({
+        path: "threads",
+        populate: [
+          {
+            path: "likes",
+          },
+          { path: "comments" },
+          {
+            path: "admin",
+          },
+        ],
+      })
+      .populate({ path: "replies", populate: [{ path: "admin" }] })
+      .populate({
+        path: "rePosts",
+        populate: [{ path: "likes" }, { path: "comments" }, { path: "admin" }],
+      });
+
+    if (!user) {
+      return res.status(400).json({
+        message: "user is  not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      user,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Error in user profileById",
+      error: error.message || "An unexpected error occurred.",
+    });
+  }
+};
