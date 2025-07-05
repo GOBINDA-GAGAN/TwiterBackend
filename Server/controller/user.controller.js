@@ -214,3 +214,53 @@ export const profileById = async (req, res) => {
     });
   }
 };
+
+export const followUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).json({
+        message: "User ID is required",
+      });
+    }
+
+    const targetUser = await User.findById(id);
+
+    if (!targetUser) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    const currentUserId = req.userId; // Assuming this is added by auth middleware
+
+    // If already following, unfollow
+    if (targetUser.followers.includes(currentUserId)) {
+      await User.findByIdAndUpdate(id, {
+        $pull: { followers: currentUserId },
+      });
+
+      return res.status(200).json({
+        message: `Unfollowed ${targetUser.username}`,
+      });
+    }
+
+    // Otherwise, follow
+    await User.findByIdAndUpdate(id, {
+      $addToSet: { followers: currentUserId }, // prevents duplicate entries
+    });
+
+    return res.status(200).json({
+      message: `Followed ${targetUser.username}`,
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Error in followUser",
+      error: error.message || "An unexpected error occurred.",
+    });
+  }
+};
+
