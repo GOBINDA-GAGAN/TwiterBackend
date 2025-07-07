@@ -2,8 +2,8 @@ import dotenv from "dotenv";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/user.js";
-import Comment from "../models/comment.js";
-import Post from "../models/post.js";
+import formidable from "formidable";
+import { cloudinary } from "../config/cloudinary.js";
 dotenv.config();
 
 export const signIn = async (req, res) => {
@@ -254,7 +254,6 @@ export const followUser = async (req, res) => {
     return res.status(200).json({
       message: `Followed ${targetUser.username}`,
     });
-
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -264,3 +263,81 @@ export const followUser = async (req, res) => {
   }
 };
 
+
+export const updateUser = async (req, res) => {
+  try {
+    console.log("Cloudinary API Key:", process.env.API_KEY);
+
+    const userExist = await User.findById(req.userId);
+    if (!userExist) {
+      return res.status(400).json({
+        status: false,
+        message: "no user found",
+      });
+    }
+
+    const form = formidable({});
+    form.parse(req, async (err, fields, files) => {
+      if (err) {
+        res.status(400).json({
+          message: "error in  formidable",
+          err: err,
+        });
+      }
+      console.log("++++++++++");
+      
+      console.log(files);
+      
+      if (fields.text) {
+        await User.findByIdAndUpdate(
+          req.userId,
+          {
+            bio:fields.text,
+          },
+          { new: true }
+        );
+      }
+      if (files.media) {
+        if (userExist.public_id) {
+          await cloudinary.uploader.destroy(
+            userExist.public_id,
+            (error, result) => {
+              console.log({ error, result });
+            }
+          );
+        }
+        const uploadedImage = await cloudinary.uploader.upload(
+          files.media.filepath,
+
+          { folder: "Threads_Clone/Profiles" }
+        );
+
+        if (!uploadedImage) {
+       return res.status(400).json({
+            message: "Error in uploaded profile !",
+          });
+        }
+        await User.findByIdAndUpdate(
+          req.userId,
+          {
+            profilePicture: uploadedImage.secure_url,
+            public_id: uploadedImage.public_id,
+          },
+          { new: true }
+        );
+      }
+    });
+
+   return res.status(200).json({
+      message: "profile update successfully",
+      
+    });
+    
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Error in updateUser",
+      error: error.message || "An unexpected error occurred.",
+    });
+  }
+};

@@ -1,5 +1,5 @@
 import express from "express";
-import {followUser, logout, profile, profileById, signIn,signUp} from "../controller/user.controller.js"
+import {followUser, logout, profile, profileById, signIn,signUp, updateUser} from "../controller/user.controller.js"
 import {isAuthenticated} from "../middleware/isAuthenticated.js"
 const router = express.Router();
 
@@ -16,8 +16,11 @@ router.get("/logout",logout)
 
 
 
-//? for follow log in user to another
+//? this router for follow log in user to another
 router.put('/follow/:id', isAuthenticated, followUser);
+
+// this is for update profile 
+router.put('/update', isAuthenticated, updateUser);
 
 
 
