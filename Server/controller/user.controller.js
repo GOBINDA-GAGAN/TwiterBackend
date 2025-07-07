@@ -298,13 +298,10 @@ export const updateUser = async (req, res) => {
             const result = await cloudinary.uploader.destroy(
               userExist.publicId
             );
-            console.log("✅ Cloudinary deletion result:", result);
           } catch (err) {
-            console.error("❌ Error deleting image from Cloudinary:", err);
+            console.error( err);
           }
         }
-
-        console.log(userExist.publicId);
 
         const uploadedImage = await cloudinary.uploader.upload(
           files.media.filepath,
