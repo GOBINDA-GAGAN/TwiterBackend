@@ -11,7 +11,7 @@ router.get("/welcome-message", (req, res) => {
 // Auth
 router.post('/auth/sign-in', signIn);
 router.post('/auth/sign-up', signUp);
-router.get('/auth/logout', logout);
+router.get('/auth/logout',isAuthenticated, logout);
 
 // Profile (authenticated user's own profile)
 router.get('/profile', isAuthenticated, profile);
