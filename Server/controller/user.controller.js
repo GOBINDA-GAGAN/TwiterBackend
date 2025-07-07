@@ -263,12 +263,10 @@ export const followUser = async (req, res) => {
   }
 };
 
-
 export const updateUser = async (req, res) => {
   try {
-    console.log("Cloudinary API Key:", process.env.API_KEY);
-
     const userExist = await User.findById(req.userId);
+
     if (!userExist) {
       return res.status(400).json({
         status: false,
@@ -284,36 +282,37 @@ export const updateUser = async (req, res) => {
           err: err,
         });
       }
-      console.log("++++++++++");
-      
-      console.log(files);
-      
       if (fields.text) {
         await User.findByIdAndUpdate(
           req.userId,
           {
-            bio:fields.text,
+            bio: fields.text,
           },
           { new: true }
         );
       }
+
       if (files.media) {
-        if (userExist.public_id) {
-          await cloudinary.uploader.destroy(
-            userExist.public_id,
-            (error, result) => {
-              console.log({ error, result });
-            }
-          );
+        if (userExist.publicId) {
+          try {
+            const result = await cloudinary.uploader.destroy(
+              userExist.publicId
+            );
+            console.log("✅ Cloudinary deletion result:", result);
+          } catch (err) {
+            console.error("❌ Error deleting image from Cloudinary:", err);
+          }
         }
+
+        console.log(userExist.publicId);
+
         const uploadedImage = await cloudinary.uploader.upload(
           files.media.filepath,
 
           { folder: "Threads_Clone/Profiles" }
         );
-
         if (!uploadedImage) {
-       return res.status(400).json({
+          return res.status(400).json({
             message: "Error in uploaded profile !",
           });
         }
@@ -321,18 +320,15 @@ export const updateUser = async (req, res) => {
           req.userId,
           {
             profilePicture: uploadedImage.secure_url,
-            public_id: uploadedImage.public_id,
+            publicId: uploadedImage.public_id,
           },
           { new: true }
         );
       }
+      return res.status(200).json({
+        message: "profile update successfully",
+      });
     });
-
-   return res.status(200).json({
-      message: "profile update successfully",
-      
-    });
-    
   } catch (error) {
     return res.status(500).json({
       success: false,
