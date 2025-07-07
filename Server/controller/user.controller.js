@@ -300,7 +300,7 @@ export const updateUser = async (req, res) => {
               { invalidate: true }
             );
           } catch (err) {
-            console.error( err);
+            console.error(err);
           }
         }
 
@@ -331,6 +331,32 @@ export const updateUser = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Error in updateUser",
+      error: error.message || "An unexpected error occurred.",
+    });
+  }
+};
+
+export const searchUser = async (req, res) => {
+  try {
+    const { query } = req.params;
+    const users = await User.find({
+      $or: [
+        {
+          username: {
+            $regex: query,
+            $options: "i",
+          },
+        },
+      ],
+    });
+    return res.status(200).json({
+      message: "search  user ",
+      search_user: users,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Error in search",
       error: error.message || "An unexpected error occurred.",
     });
   }

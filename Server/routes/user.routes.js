@@ -1,5 +1,5 @@
 import express from "express";
-import {followUser, logout, profile, profileById, signIn,signUp, updateUser} from "../controller/user.controller.js"
+import {followUser, logout, profile, profileById, searchUser, signIn,signUp, updateUser} from "../controller/user.controller.js"
 import {isAuthenticated} from "../middleware/isAuthenticated.js"
 const router = express.Router();
 
@@ -12,6 +12,9 @@ router.post('/auth/sign-in',signIn);
 router.post('/auth/sign-up',signUp);
 router.get("/user/:id",profileById)
 router.get("/profile", isAuthenticated,profile)
+
+router.get("/:query",searchUser)
+
 router.get("/logout",logout)
 
 
