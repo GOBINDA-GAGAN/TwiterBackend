@@ -2,6 +2,9 @@ import dotenv from "dotenv";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/user.js";
+import Post from "../models/post.js"
+import Comment from "../models/comment.js"
+
 import formidable from "formidable";
 import { cloudinary } from "../config/cloudinary.js";
 dotenv.config();

@@ -8,14 +8,19 @@ router.get("/welcome-message", (req, res) => {
 });
 
 
-router.post('/auth/sign-in',signIn);
-router.post('/auth/sign-up',signUp);
-router.get("/user/:id",profileById)
-router.get("/profile", isAuthenticated,profile)
+// Auth
+router.post('/auth/sign-in', signIn);
+router.post('/auth/sign-up', signUp);
+router.get('/auth/logout', logout);
 
-router.get("/:query",searchUser)
+// Profile (authenticated user's own profile)
+router.get('/profile', isAuthenticated, profile);
 
-router.get("/logout",logout)
+// User Profile by ID
+router.get('/user/id/:id',isAuthenticated, profileById);        
+// User Search by username or query
+router.get('/user/search/:query', searchUser);  
+
 
 
 
