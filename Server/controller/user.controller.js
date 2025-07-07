@@ -296,7 +296,8 @@ export const updateUser = async (req, res) => {
         if (userExist.publicId) {
           try {
             const result = await cloudinary.uploader.destroy(
-              userExist.publicId
+              userExist.publicId,
+              { invalidate: true }
             );
           } catch (err) {
             console.error( err);
