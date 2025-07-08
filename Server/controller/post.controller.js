@@ -5,6 +5,16 @@ import formidable from "formidable";
 import { cloudinary } from "../config/cloudinary.js";
 
 export const addPost = async (req, res) => {
+  const userId = req.userId;
+
+  const userExistOrNot = await User.findById(userId);
+
+  if (!userExistOrNot) {
+    return res.status(500).json({
+      message: "user not found",
+    });
+  }
+
   const form = formidable({});
 
   form.parse(req, async (err, fields, files) => {
@@ -88,6 +98,37 @@ export const getAllPost = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       message: "Error in getAll post",
+      error: error.message,
+    });
+  }
+};
+
+export const deletePost = async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const deletePostId = await Post.findById(postId);
+
+    if (!deletePostId) {
+     return res.status(404).json({
+        message: "Post not found",
+      });
+    }
+
+    const deletePost = await Post.findByIdAndDelete(postId);
+    if (deletePost) {
+      await cloudinary.uploader.destroy(deletePost.publicId);
+    }
+
+    await User.findByIdAndUpdate(deletePost.admin, {
+      $pull: { threads: postId },
+    });
+
+    return res.status(200).json({
+      message: "delete post",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Error in delete post",
       error: error.message,
     });
   }

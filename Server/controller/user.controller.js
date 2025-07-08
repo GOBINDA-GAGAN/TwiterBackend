@@ -1,4 +1,3 @@
-
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/user.js";
@@ -133,8 +132,18 @@ export const signUp = async (req, res) => {
 
 export const profile = async (req, res) => {
   try {
-    const user = await User.findById(req.userId).select("-password");
-    res.status(200).json({
+    const user = await User.findById(req.userId)
+      .select("-password")
+      .populate({
+        path: "threads",
+        populate: [
+          {
+            path: "likes",
+          },
+          { path: "comments" },
+        ],
+      });
+    return res.status(200).json({
       message: `welcome ${user.username}`,
       user,
     });
