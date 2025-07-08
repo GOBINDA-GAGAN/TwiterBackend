@@ -4,6 +4,7 @@ import cors from "cors";
 import connectDB from "./config/db.js";
 import userRouter from "./routes/user.routes.js";
 import adminRouter  from "./routes/admin.routes.js"
+import postRouter  from "./routes/post.routes.js"
 import cookieParser from "cookie-parser";
 
 
@@ -22,6 +23,7 @@ app.use(cookieParser());
 
 // Routes
 app.use("/api/v1", userRouter);
+app.use("/api/v1",postRouter);
 
 
 

@@ -1,4 +1,4 @@
-import dotenv from "dotenv";
+
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/user.js";
@@ -7,7 +7,6 @@ import Comment from "../models/comment.js";
 
 import formidable from "formidable";
 import { cloudinary } from "../config/cloudinary.js";
-dotenv.config();
 
 export const signIn = async (req, res) => {
   try {
