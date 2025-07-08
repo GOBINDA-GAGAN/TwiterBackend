@@ -42,13 +42,16 @@ export const addPost = async (req, res) => {
 
       const newPost = await post.save();
 
-      await User.findByIdAndUpdate(req.userId,{$push:{threads:newPost._id}},{new:true})
+      await User.findByIdAndUpdate(
+        req.userId,
+        { $push: { threads: newPost._id } },
+        { new: true }
+      );
 
       return res.status(200).json({
         message: "Post created successfully",
         post: newPost,
       });
-
     } catch (error) {
       return res.status(500).json({
         message: "Error in addPost controller",
@@ -58,3 +61,34 @@ export const addPost = async (req, res) => {
   });
 };
 
+export const getAllPost = async (req, res) => {
+  try {
+    const { page } = req.query;
+    let pageNumber = page;
+    if (!page || page === undefined) {
+      pageNumber = 1;
+    }
+    const AllPost = await Post.find()
+      .sort({
+        createdAt: -1,
+      })
+      .skip((pageNumber - 1) * 3)
+      .limit(3);
+
+    if (AllPost.length == 0) {
+      return res.status(402).json({
+        message: "no post found",
+      });
+    }
+
+    return res.status(200).json({
+      message: "fetch all post",
+      AllPost: AllPost,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Error in getAll post",
+      error: error.message,
+    });
+  }
+};
