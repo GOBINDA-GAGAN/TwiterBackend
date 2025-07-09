@@ -235,13 +235,54 @@ export const rePost = async (req, res) => {
       { new: true }
     );
 
-    return (
-      res.status(200).
-      json({
-        message: "re post successfully",
-      })
-    );
+    return res.status(200).json({
+      message: "re post successfully",
+    });
   } catch (error) {
     res.status(400).json({ message: "error in rePost", error: error.message });
+  }
+};
+
+export const singlePost = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return res.status(400).json({
+        message: "id is required",
+      });
+    }
+
+    const post = await Post.findById(id)
+      .populate({
+        path:"likes",
+        select:"username profilePicture "
+      })
+      .populate({
+        path: "admin",
+        select: "username profilePicture bio", // 👈 excludes password, email, etc.
+      })
+      .populate({
+        path: "comments",
+        populate: {
+          path: "admin",
+          select: "username profilePicture", // 👈 safe for comment authors too
+        },
+      });
+
+    if (!post) {
+      return res.status(400).json({
+        message: "post is  not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      post,
+    });
+  } catch (error) {
+    res.status(400).json({
+      message: " error in singlePost",
+      error: error.message,
+    });
   }
 };
