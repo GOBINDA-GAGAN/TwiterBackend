@@ -259,13 +259,13 @@ export const singlePost = async (req, res) => {
       })
       .populate({
         path: "admin",
-        select: "username profilePicture bio", // 👈 excludes password, email, etc.
+        select: "username profilePicture bio", 
       })
       .populate({
         path: "comments",
         populate: {
           path: "admin",
-          select: "username profilePicture", // 👈 safe for comment authors too
+          select: "username profilePicture",
         },
       });
 
