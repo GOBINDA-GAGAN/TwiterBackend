@@ -4,7 +4,10 @@ import Post from "../models/post.js";
 export const getAllUser = async (req, res) => {
   try {
     const AllUser = await User.find()
-      .populate("followers")
+      .populate({
+        path: "followers",
+        select: "username -_id",
+      })
       .select("-password")
       .populate({
         path: "threads",
@@ -71,7 +74,8 @@ export const deleteAllPost = async (req, res) => {
     const AllPost = await Post.find();
     if (AllPost.length === 0) {
       return res.status(200).json({
-        message: "already delete all post- no post found",
+        message: "post not found",
+        AllPost,
       });
     }
 

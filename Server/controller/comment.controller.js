@@ -1,5 +1,6 @@
 import Comment from "../models/comment.js";
 import Post from "../models/post.js";
+import User from "../models/user.js";
 
 export const addComment = async (req, res) => {
   try {
@@ -31,6 +32,13 @@ export const addComment = async (req, res) => {
       postId,
       {
         $push: { comments: newComment._id },
+      },
+      { new: true }
+    );
+    await User.findByIdAndUpdate(
+     userId,
+      {
+        $push: { replies: newComment._id },
       },
       { new: true }
     );
