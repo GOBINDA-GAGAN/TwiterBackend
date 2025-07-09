@@ -52,7 +52,11 @@ export const addPost = async (req, res) => {
 
       post.admin = req.userId;
 
-      const newPost = await post.save();
+      let newPost = await post.save();
+      newPost = await newPost.populate({
+        path: "admin",
+        select: "username email -_id",
+      });
 
       await User.findByIdAndUpdate(
         req.userId,
@@ -86,7 +90,8 @@ export const getAllPost = async (req, res) => {
       })
       .skip((pageNumber - 1) * 3)
       .limit(3)
-      .populate({ path: "likes", select: "-password" });
+      .populate({ path: "likes", select: "username" })
+      .populate({ path: "admin", select: "username" });
 
     if (AllPost.length == 0) {
       return res.status(402).json({
@@ -109,38 +114,47 @@ export const getAllPost = async (req, res) => {
 export const deletePost = async (req, res) => {
   try {
     const { postId } = req.params;
-    const deletePostId = await Post.findById(postId);
+    const userId = req.userId;
 
-    if (!deletePostId) {
-      return res.status(404).json({
-        message: "Post not found",
-      });
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
     }
 
-    const deletePost = await Post.findByIdAndDelete(postId);
-    if (deletePost) {
-      await cloudinary.uploader.destroy(deletePost.publicId);
+    // Check if the user is the post owner
+    if (userId !== post.admin.toString()) {
+      return res.status(403).json({ message: "You are not authorized to delete this post" });
     }
 
+    // Delete image from Cloudinary if publicId exists
+    if (post.publicId) {
+      await cloudinary.uploader.destroy(post.publicId);
+    }
+
+    // Delete the post
+    await Post.findByIdAndDelete(postId);
+
+    // Remove post reference from user
     await User.findByIdAndUpdate(
-      deletePost.admin,
-      {
-        $pull: { threads: postId },
-      },
+      post.admin,
+      { $pull: { threads: postId } },
       { new: true }
     );
-    await Comment.deleteMany({ _id: { $in: deletePost.comments } });
 
-    return res.status(200).json({
-      message: "delete post",
-    });
+    // Delete related comments
+    if (post.comments && post.comments.length > 0) {
+      await Comment.deleteMany({ _id: { $in: post.comments } });
+    }
+
+    return res.status(200).json({ message: "Post deleted successfully" });
   } catch (error) {
     return res.status(500).json({
-      message: "Error in delete post",
+      message: "Error deleting post",
       error: error.message,
     });
   }
 };
+
 
 export const like_dislike = async (req, res) => {
   try {
@@ -254,12 +268,12 @@ export const singlePost = async (req, res) => {
 
     const post = await Post.findById(id)
       .populate({
-        path:"likes",
-        select:"username profilePicture "
+        path: "likes",
+        select: "username profilePicture ",
       })
       .populate({
         path: "admin",
-        select: "username profilePicture bio", 
+        select: "username profilePicture bio",
       })
       .populate({
         path: "comments",
