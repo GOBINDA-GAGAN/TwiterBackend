@@ -359,7 +359,7 @@ export const searchUser = async (req, res) => {
           },
         },
       ],
-    });
+    }).select("-password");
 
     if (users.length === 0) {
       return res.status(200).json({

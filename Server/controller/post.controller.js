@@ -3,9 +3,11 @@ import Post from "../models/post.js";
 import Comment from "../models/comment.js";
 import formidable from "formidable";
 import { cloudinary } from "../config/cloudinary.js";
+import mongoose from "mongoose";
 
 export const addPost = async (req, res) => {
   const userId = req.userId;
+  console.log(userId);
 
   const userExistOrNot = await User.findById(userId);
 
@@ -83,7 +85,8 @@ export const getAllPost = async (req, res) => {
         createdAt: -1,
       })
       .skip((pageNumber - 1) * 3)
-      .limit(3);
+      .limit(3)
+      .populate({ path: "likes", select: "-password" });
 
     if (AllPost.length == 0) {
       return res.status(402).json({
@@ -109,7 +112,7 @@ export const deletePost = async (req, res) => {
     const deletePostId = await Post.findById(postId);
 
     if (!deletePostId) {
-     return res.status(404).json({
+      return res.status(404).json({
         message: "Post not found",
       });
     }
@@ -119,9 +122,14 @@ export const deletePost = async (req, res) => {
       await cloudinary.uploader.destroy(deletePost.publicId);
     }
 
-    await User.findByIdAndUpdate(deletePost.admin, {
-      $pull: { threads: postId },
-    });
+    await User.findByIdAndUpdate(
+      deletePost.admin,
+      {
+        $pull: { threads: postId },
+      },
+      { new: true }
+    );
+    await Comment.deleteMany({ _id: { $in: deletePost.comments } });
 
     return res.status(200).json({
       message: "delete post",
@@ -131,5 +139,109 @@ export const deletePost = async (req, res) => {
       message: "Error in delete post",
       error: error.message,
     });
+  }
+};
+
+export const like_dislike = async (req, res) => {
+  try {
+    const { postId } = req.params;
+    console.log(postId);
+
+    if (!postId) {
+      return res.status(400).json({
+        message: "id not found",
+      });
+    }
+
+    const postExist = await Post.findById(postId);
+    if (!postExist) {
+      return res.status(400).json({
+        message: "post not found",
+      });
+    }
+
+    if (postExist.likes.includes(req.userId)) {
+      await Post.findByIdAndUpdate(
+        postId,
+        {
+          $pull: {
+            likes: req.userId,
+          },
+        },
+        { new: true }
+      );
+      return res.status(201).json({
+        message: "post unlike",
+      });
+    }
+    await Post.findByIdAndUpdate(
+      postId,
+      {
+        $push: {
+          likes: req.userId,
+        },
+      },
+      { new: true }
+    );
+    return res.status(201).json({
+      message: "post like",
+    });
+  } catch (error) {
+    res
+      .status(400)
+      .json({ message: "error in like post", error: error.message });
+  }
+};
+
+export const rePost = async (req, res) => {
+  try {
+    const findUserid = req.userId;
+
+    const user = await User.findById(findUserid);
+    if (!user) {
+      return res.status(200).json({
+        message: "user not found",
+      });
+    }
+
+    const { postId } = req.params;
+    console.log(postId);
+
+    if (!postId) {
+      return res.status(400).json({
+        message: "id not found",
+      });
+    }
+
+    const postExist = await Post.findById(postId);
+    if (!postExist) {
+      return res.status(400).json({
+        message: "post not found",
+      });
+    }
+
+    const newId = new mongoose.Types.ObjectId(postId);
+    if (user.rePosts.includes(newId)) {
+      return res.status(400).json({
+        message: "this post is already rePost",
+      });
+    }
+
+    await User.findByIdAndUpdate(
+      req.userId,
+      {
+        $push: { rePosts: postExist._id },
+      },
+      { new: true }
+    );
+
+    return (
+      res.status(200).
+      json({
+        message: "re post successfully",
+      })
+    );
+  } catch (error) {
+    res.status(400).json({ message: "error in rePost", error: error.message });
   }
 };
