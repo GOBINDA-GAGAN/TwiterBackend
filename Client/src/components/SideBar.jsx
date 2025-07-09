@@ -8,11 +8,10 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 
 const SideBar = () => {
   const location = useLocation();
-  const isLoginPage =
-    location.pathname === "/" || location.pathname === "/login";
+  const isLoginPage = location.pathname === "/login";
   const isSignupPage = location.pathname === "/signup";
 
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -37,7 +36,7 @@ const SideBar = () => {
           <img
             src="/insta logo.png"
             alt="Logo"
-            className="h-14 object-contain"
+            className="h-20 object-contain"
           />
         </Link>
       </div>
@@ -158,7 +157,12 @@ const SideBar = () => {
             </p>
           </form>
         </div>
-      ) : null}
+      ) : (
+        <>
+          <Profile />
+          <SidebarLinks />
+        </>
+      )}
     </div>
   );
 };

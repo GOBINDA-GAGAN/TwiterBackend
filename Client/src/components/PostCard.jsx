@@ -4,6 +4,8 @@ import {
   FiBookmark,
   FiMoreHorizontal,
 } from "react-icons/fi";
+import { BiRepost } from "react-icons/bi";
+
 
 const PostCard = ({
   user,
@@ -47,6 +49,7 @@ const PostCard = ({
           <div className="flex items-center gap-4 text-2xl text-gray-800">
             <FiHeart className="cursor-pointer" />
             <FiMessageCircle className="cursor-pointer" />
+            <BiRepost size={25} className="cursor-pointer" />
           </div>
           <FiBookmark className="text-2xl text-gray-800 cursor-pointer" />
         </div>
