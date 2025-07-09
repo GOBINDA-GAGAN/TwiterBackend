@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+/* Custom thin scrollbar */
+.thin-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.thin-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #ffffff; /* Tailwind gray-300 */
+  border-radius: 10px;
+}
+
+.thin-scrollbar::-webkit-scrollbar-track {
+  background: #ffffff; /* Tailwind gray-100 */
+}
