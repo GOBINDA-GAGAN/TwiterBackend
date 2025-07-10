@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Profile from "./Profile";
 import SidebarLinks from "./SidebarLinks";
 import { FiLogOut } from "react-icons/fi";
@@ -8,6 +8,7 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 
 const SideBar = () => {
   const location = useLocation();
+  const navigate=useNavigate();
   const isLoginPage = location.pathname === "/login";
   const isSignupPage = location.pathname === "/signup";
 
@@ -25,11 +26,13 @@ const SideBar = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
   };
-  const handleLogout = () => {};
+  const handleLogout = () => {
+    navigate('/signup')
+  };
   const handleGoogleLogin = () => {};
 
   return (
-    <div className="w-[350px] p-4 overflow-y-auto h-screen border-r thin-scrollbar">
+    <div className="w-[350px] p-4 overflow-y-auto h-screen border-r thin-scrollbar scroll-smooth">
       {/* Logo */}
       <div className="flex items-center justify-center mb-6">
         <Link to="/">
@@ -49,7 +52,7 @@ const SideBar = () => {
           <div className="mt-6">
             <button
               onClick={handleLogout}
-              className="flex items-center gap-2 text-red-600 hover:bg-red-100 w-full px-3 py-2 rounded-md"
+              className=" cursor-pointer flex items-center gap-2 text-red-600 hover:bg-red-100 w-full px-3 py-2 rounded-md"
             >
               <FiLogOut className="text-xl" />
               Logout
@@ -161,6 +164,15 @@ const SideBar = () => {
         <>
           <Profile />
           <SidebarLinks />
+          <div className="mt-6">
+            <button
+              onClick={handleLogout}
+              className="flex items-center cursor-pointer gap-2 bg-red-100 text-gray-900 hover:bg-red-200 w-full px-3 py-2 rounded-md"
+            >
+              <FiLogOut className="text-xl" />
+              Logout
+            </button>
+          </div>
         </>
       )}
     </div>
