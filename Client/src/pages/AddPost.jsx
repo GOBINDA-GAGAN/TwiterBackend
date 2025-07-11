@@ -7,12 +7,6 @@ export default function AddPost() {
   const [posts, setPosts] = useState([]);
 
   const handleSubmit = () => {
-    if (title.trim() && content.trim()) {
-      setPosts([...posts, { title, content }]);
-      setTitle("");
-      setContent("");
-      setShowForm(false);
-    }
   };
 
   return (
