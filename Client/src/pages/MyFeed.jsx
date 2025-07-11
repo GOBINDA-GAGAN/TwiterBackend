@@ -228,7 +228,7 @@ const MyFeed = () => {
       <div className=" p-4 ">
         <h1 className=" text-2xl font-semibold">Feed</h1>
       </div>
-      <div className="columns-1 sm:columns-2 md:columns-2 lg:columns-4 gap-4 space-y-4">
+      <div className="columns-1 sm:columns-2 md:columns-2 lg:columns-3 gap-4 space-y-4">
         {posts.map((post, index) => (
           <PostCard key={index} {...post} />
         ))}

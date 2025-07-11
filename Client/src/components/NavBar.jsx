@@ -48,7 +48,7 @@ const NavBar = () => {
 
           <button
             onClick={handleClickAddPost}
-            className="bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 flex items-center gap-2 text-sm sm:text-base font-medium px-4 py-2 rounded-full text-white"
+            className="bg-gradient-to-r cursor-pointer from-orange-500 via-red-500 to-pink-500 flex items-center gap-2 text-sm sm:text-base font-medium px-4 py-2 rounded-full text-white"
           >
             <FiPlus size={20} />
             <span className="hidden sm:inline">Add Post</span>
