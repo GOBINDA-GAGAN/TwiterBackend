@@ -25,7 +25,9 @@ const NavBar = () => {
           <TiMessages size={25} />
         </Link>
       
-        <button className="cursor-pointer bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 flex items-center gap-2 text-base font-medium px-4 py-2 rounded-full w-full text-white">
+        <button
+        onClick={navigator("/add-post")}
+        className="cursor-pointer bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 flex items-center gap-2 text-base font-medium px-4 py-2 rounded-full w-full text-white">
           <FiPlus size={25} />
           Add Post
         </button>
