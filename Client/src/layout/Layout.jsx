@@ -6,7 +6,7 @@ const Layout = ({ children }) => {
   return (
     <div className="flex w-full h-screen bg-white overflow-hidden">
       {/* Sidebar - scroll only on Y axis */}
-      <aside className=" thin-scrollbar w-[350px] max-h-[90vh] bg-white pr-4 h-full overflow-y-auto overflow-x-hidden">
+      <aside className="  w-[350px] max-h-screen   bg-white pr-4 h-full overflow-y-auto overflow-x-hidden scroll-smooth">
         <SideBar />
       </aside>
 

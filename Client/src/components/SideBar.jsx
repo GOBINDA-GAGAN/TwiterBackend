@@ -8,7 +8,8 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 
 const SideBar = () => {
   const location = useLocation();
-  const navigate=useNavigate();
+  const navigate = useNavigate();
+
   const isLoginPage = location.pathname === "/login";
   const isSignupPage = location.pathname === "/signup";
 
@@ -22,29 +23,52 @@ const SideBar = () => {
     confirmPassword: "",
   });
 
-  const handleChange = () => {};
+  // Handle input changes
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Submit login/signup form
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log("Form submitted:", formData);
+    navigate("/");
+
+
+    // Fake login success
+    setIsLoggedIn(true);
+    setFormData({
+      email: "",
+      username: "",
+      password: "",
+      confirmPassword: "",
+    });
   };
+
   const handleLogout = () => {
-    navigate('/signup')
+    setIsLoggedIn(false);
+    navigate("/signup");
   };
-  const handleGoogleLogin = () => {};
+
+  const handleGoogleLogin = () => {
+    console.log("Google login clicked");
+  };
 
   return (
-    <div className="w-[350px] p-4 overflow-y-auto h-screen border-r thin-scrollbar scroll-smooth">
+    <div className="w-[350px] p-4 overflow-y-auto h-screen  thin-scrollbar scroll-smooth z-20">
       {/* Logo */}
-      <div className="flex items-center justify-center mb-6">
+      <div className="flex items-center justify-center">
         <Link to="/">
           <img
             src="/insta logo.png"
             alt="Logo"
-            className="h-20 object-contain"
+            className=" h-14 md:h-20 object-contain"
           />
         </Link>
       </div>
 
-      {/* Logged In View */}
+      {/* If Logged In */}
       {isLoggedIn ? (
         <div className="h-[90vh]">
           <Profile />
@@ -52,7 +76,7 @@ const SideBar = () => {
           <div className="mt-6">
             <button
               onClick={handleLogout}
-              className=" cursor-pointer flex items-center gap-2 text-red-600 hover:bg-red-100 w-full px-3 py-2 rounded-md"
+              className="flex items-center gap-2 text-red-600 hover:bg-red-100 w-full px-3 py-2 rounded-md"
             >
               <FiLogOut className="text-xl" />
               Logout
@@ -60,13 +84,12 @@ const SideBar = () => {
           </div>
         </div>
       ) : isLoginPage || isSignupPage ? (
-        // Login or Signup Form based on URL
+        // Login or Signup View
         <div className="bg-white border border-gray-200 shadow-md rounded-3xl p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             <h2 className="text-2xl font-bold text-center text-gray-800">
               {isSignupPage ? "Sign Up" : "Login"}
             </h2>
-
             <p className="text-sm text-center text-gray-500 mb-2">
               {isSignupPage
                 ? "Sign up to connect with your friends and share memories."
@@ -77,6 +100,7 @@ const SideBar = () => {
               <input
                 type="text"
                 name="username"
+                value={formData.username}
                 placeholder="Username"
                 onChange={handleChange}
                 className="w-full border border-gray-300 p-2 rounded-md"
@@ -86,6 +110,7 @@ const SideBar = () => {
             <input
               type="text"
               name="email"
+              value={formData.email}
               placeholder={
                 isSignupPage ? "Email" : "Enter your email or username"
               }
@@ -97,6 +122,7 @@ const SideBar = () => {
               <input
                 type={showPassword ? "text" : "password"}
                 name="password"
+                value={formData.password}
                 placeholder="Password"
                 onChange={handleChange}
                 className="w-full border border-gray-300 p-2 rounded-md pr-10"
@@ -113,6 +139,7 @@ const SideBar = () => {
               <input
                 type={showPassword ? "text" : "password"}
                 name="confirmPassword"
+                value={formData.confirmPassword}
                 placeholder="Confirm Password"
                 onChange={handleChange}
                 className="w-full border border-gray-300 p-2 rounded-md"
@@ -141,7 +168,7 @@ const SideBar = () => {
             <button
               type="button"
               onClick={handleGoogleLogin}
-              className=" cursor-pointer w-full border border-gray-300 py-2 rounded-full flex items-center justify-center gap-2 hover:bg-gray-50 transition"
+              className="w-full border border-gray-300 py-2 rounded-full flex items-center justify-center gap-2 hover:bg-gray-50 transition"
             >
               <FcGoogle size={20} />
               <span className="text-sm font-medium">Continue with Google</span>
@@ -161,13 +188,14 @@ const SideBar = () => {
           </form>
         </div>
       ) : (
+        // Default Fallback (not logged in but not on login/signup)
         <>
           <Profile />
           <SidebarLinks />
           <div className="mt-6">
             <button
               onClick={handleLogout}
-              className="flex items-center cursor-pointer gap-2 bg-red-100 text-gray-900 hover:bg-red-200 w-full px-3 py-2 rounded-md"
+              className="flex items-center gap-2 bg-red-100 text-gray-900 hover:bg-red-200 w-full px-3 py-2 rounded-md"
             >
               <FiLogOut className="text-xl" />
               Logout
