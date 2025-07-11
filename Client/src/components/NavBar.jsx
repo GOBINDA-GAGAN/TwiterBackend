@@ -4,9 +4,11 @@ import { FaFacebookMessenger } from "react-icons/fa6";
 import { FiPlus } from "react-icons/fi";
 import { IoIosNotificationsOutline } from "react-icons/io";
 import { TiMessages } from "react-icons/ti";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const NavBar = () => {
+const navigate= useNavigate();
+
   return (
     <div className="flex justify-between px-6 py-5">
       <div className=" rounded-4xl flex items-center w-[350px] bg-[#FFFFFF] px-2 gap-2">
@@ -26,7 +28,7 @@ const NavBar = () => {
         </Link>
       
         <button
-        onClick={navigator("/add-post")}
+        onClick={navigate("/add-post")}
         className="cursor-pointer bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 flex items-center gap-2 text-base font-medium px-4 py-2 rounded-full w-full text-white">
           <FiPlus size={25} />
           Add Post
