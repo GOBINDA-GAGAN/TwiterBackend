@@ -6,7 +6,7 @@ import { FiLogOut } from "react-icons/fi";
 import { FcGoogle } from "react-icons/fc";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { useAuth } from "../context/AuthContext";
-import { loginService, logoutService } from "../services/authService";
+import { loginService } from "../services/authService";
 
 const SideBar = () => {
   const { login } = useAuth();
@@ -71,8 +71,8 @@ const SideBar = () => {
   };
 
   const handleLogout = () => {
-    const response = logoutService();
-    console.log(response);
+    // const response = logoutService();
+    // console.log(response);
 
     setIsLoggedIn(false);
     navigate("/signup");
