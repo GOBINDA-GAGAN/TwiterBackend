@@ -5,13 +5,17 @@ import SidebarLinks from "./SidebarLinks";
 import { FiLogOut } from "react-icons/fi";
 import { FcGoogle } from "react-icons/fc";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import { useAuth } from "../context/AuthContext";
+import { loginService, logoutService } from "../services/authService";
 
 const SideBar = () => {
+  const { login } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
   const isLoginPage = location.pathname === "/login";
   const isSignupPage = location.pathname === "/signup";
+  const [error, setError] = useState(null);
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -30,23 +34,46 @@ const SideBar = () => {
   };
 
   // Submit login/signup form
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
-    navigate("/");
 
+    try {
+      const response = await loginService(formData);
 
-    // Fake login success
-    setIsLoggedIn(true);
-    setFormData({
-      email: "",
-      username: "",
-      password: "",
-      confirmPassword: "",
-    });
+      console.log(response);
+
+      // ✅ If backend returns success: false (e.g., user not found)
+      if (!response.success) {
+        console.error("Backend says:", response.message); // Print backend message
+        setError(response.message); // Show error in UI
+        return;
+      }
+
+      // 🔐 Successful login — save user and token
+      login(response);
+      console.log("Login successful:", response.user || response); // optional success log
+
+      // 🚀 Redirect to home
+      navigate("/");
+    } catch (err) {
+      console.error("Login error:", err);
+
+      // ✅ Handle backend errors (e.g., 400, 401, etc.)
+      if (err.response?.data?.message) {
+        console.error("Backend says:", err.response.data.message);
+        setError(err.response.data.message);
+      } else {
+        // 🚨 Unknown error fallback
+        console.log("Unexpected error:", err);
+        setError("Something went wrong. Please try again.");
+      }
+    }
   };
 
   const handleLogout = () => {
+    const response = logoutService();
+    console.log(response);
+
     setIsLoggedIn(false);
     navigate("/signup");
   };
@@ -133,6 +160,9 @@ const SideBar = () => {
               >
                 {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
               </span>
+              {error && (
+                <p className=" text-red-600 font-normal text-xs">{error}</p>
+              )}
             </div>
 
             {isSignupPage && (

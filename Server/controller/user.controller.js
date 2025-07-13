@@ -120,6 +120,7 @@ export const signUp = async (req, res) => {
       success: true,
       message: "Sign-in successful",
       user,
+      accessToken
     });
   } catch (error) {
     return res.status(500).json({
