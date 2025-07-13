@@ -1,10 +1,13 @@
 // services/profileService.js
 import axios from "axios";
-import ENDPOINTS from '../Routes';
+import ENDPOINTS from "../Routes";
 
-export const getProfile = async () => {
+export const getProfileService = async () => {
+  console.log("LOGIN ENDPOINT:", ENDPOINTS.GET_PROFILE);
+
   const res = await axios.get(ENDPOINTS.GET_PROFILE, {
-    withCredentials: true, // Send cookie
+    withCredentials: true,
   });
+
   return res.data;
 };

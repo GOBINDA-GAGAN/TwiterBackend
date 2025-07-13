@@ -6,7 +6,7 @@ const ENDPOINTS = {
   LOGIN: `${BASE_URL}/auth/sign-up`,
   SIGNUP: `${BASE_URL}/auth/signup`,
   LOGOUT: `${BASE_URL}/auth/logout`,
-  GET_PROFILE: `${BASE_URL}/auth/me`,
+  GET_PROFILE: `${BASE_URL}/profile/`,
 
   // ✅ Users
   GET_ALL_USERS: `${BASE_URL}/users`,

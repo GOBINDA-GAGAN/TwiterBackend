@@ -132,6 +132,9 @@ export const signUp = async (req, res) => {
 };
 
 export const profile = async (req, res) => {
+  console.log("req.userId:", req.userId);
+
+
   try {
     const user = await User.findById(req.userId)
       .select("-password")

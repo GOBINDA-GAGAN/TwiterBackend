@@ -6,7 +6,7 @@ import { FiLogOut } from "react-icons/fi";
 import { FcGoogle } from "react-icons/fc";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { useAuth } from "../context/AuthContext";
-import { loginService } from "../services/authService";
+import { loginService,logoutService } from "../services/authService";
 
 const SideBar = () => {
   const { login } = useAuth();
@@ -68,14 +68,14 @@ const SideBar = () => {
         setError("Something went wrong. Please try again.");
       }
     }
-  };
+  }; 
 
   const handleLogout = () => {
-    // const response = logoutService();
-    // console.log(response);
+    const response = logoutService();
+    console.log(response);
 
     setIsLoggedIn(false);
-    navigate("/signup");
+    navigate("/login");
   };
 
   const handleGoogleLogin = () => {
@@ -225,7 +225,7 @@ const SideBar = () => {
           <div className="mt-6">
             <button
               onClick={handleLogout}
-              className="flex items-center gap-2 bg-red-100 text-gray-900 hover:bg-red-200 w-full px-3 py-2 rounded-md"
+              className="flex cursor-pointer items-center gap-2 bg-red-100 text-gray-900 hover:bg-red-200 w-full px-3 py-2 rounded-md"
             >
               <FiLogOut className="text-xl" />
               Logout

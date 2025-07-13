@@ -13,10 +13,10 @@ export const loginService = async (formData) => {
   return res.data;
 };
 
-// export const logoutService = async () => {
-//   console.log("Logout:", ENDPOINTS.LOGOUT);
-//   const res = await axios.get(ENDPOINTS.LOGOUT, {
-//     withCredentials: true,
-//   });
-//   console.log(res);
-// };
+export const logoutService = async () => {
+  console.log("Logout:", ENDPOINTS.LOGOUT);
+  const res = await axios.get(ENDPOINTS.LOGOUT, {
+    withCredentials: true,
+  });
+  console.log(res.data);
+};
