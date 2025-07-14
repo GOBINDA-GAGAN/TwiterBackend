@@ -1,16 +1,18 @@
-import React from "react";
 import StoryHighlight from "./StoryHighlight";
 import { FiPlus } from "react-icons/fi";
 import { useAuth } from "../context/AuthContext";
-import { Navigate } from "react-router-dom";
 
 const Profile = () => {
-  const { user, loading } = useAuth();
-
-  console.log(user, loading);
-  if (loading) return <p className="text-center mt-10">Loading profile...</p>;
-
-  if (!user) return <Navigate to="/login" replace />;
+  // const { user } = useAuth();
+  const user = {
+    profilePicture: "https://randomuser.me/api/portraits/women/44.jpg",
+    fullName: "alok kumar dey",
+    username: "@alok",
+    thread: [],
+    followers: [],
+    Following: [],
+    bio: "I am alok vlog | youtube",
+  };
 
   return (
     <div className="w-full p-4 space-y-4">
@@ -24,14 +26,13 @@ const Profile = () => {
         <div>
           <h1 className="text-lg font-semibold">{user.fullName}</h1>
           <h4 className="text-sm text-gray-500">{user.username}</h4>
-          
         </div>
       </div>
 
       {/* Stats */}
       <div className="flex justify-around text-center font-semibold">
         <div className="p-2 cursor-pointer hover:bg-gray-200 bg-gray-100 rounded-xl">
-          <p className="text-sm">{user.threads.length}</p>
+          <p className="text-sm">{user.thread.length}</p>
           <p className="text-xs text-gray-500">Posts</p>
         </div>
         <div className="p-2 cursor-pointer hover:bg-gray-200 bg-gray-100 rounded-xl">
