@@ -1,11 +1,21 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Profile from "./Profile";
 import SidebarLinks from "./SidebarLinks";
 import { FiLogOut } from "react-icons/fi";
+import { useAuth } from "../context/AuthContext";
 
 const SideBar = () => {
-  const handleLogout = () => {};
+
+    const { user, loading, logout } = useAuth();
+  const navigate = useNavigate();
+
+  if (loading) return <p>Loading user...</p>;
+  if (!user) return <p>No user found. Please log in.</p>;
+  const handleLogout = () => {
+    logout();               // clear user + localStorage
+    navigate("/login");     // redirect to login page
+  };
 
   return (
     <div className="w-[350px] p-4 overflow-y-auto h-screen  thin-scrollbar scroll-smooth z-20">

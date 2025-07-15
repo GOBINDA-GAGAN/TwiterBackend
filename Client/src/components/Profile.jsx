@@ -1,18 +1,12 @@
+import { useAuth } from "../context/AuthContext";
 import StoryHighlight from "./StoryHighlight";
 import { FiPlus } from "react-icons/fi";
-import { useAuth } from "../context/AuthContext";
 
 const Profile = () => {
-  // const { user } = useAuth();
-  const user = {
-    profilePicture: "https://randomuser.me/api/portraits/women/44.jpg",
-    fullName: "alok kumar dey",
-    username: "@alok",
-    thread: [],
-    followers: [],
-    Following: [],
-    bio: "I am alok vlog | youtube",
-  };
+  const { user, loading } = useAuth();
+
+  if (loading) return <p>Loading user...</p>;
+  if (!user) return <p>No user found. Please log in.</p>; // ✅ prevent crash
 
   return (
     <div className="w-full p-4 space-y-4">
@@ -20,7 +14,7 @@ const Profile = () => {
       <div className="flex flex-col items-center text-center gap-2">
         <img
           src={user.profilePicture}
-          alt="Gobinda Gagan Dey"
+          alt={user.fullName || "Profile"}
           className="h-20 w-20 rounded-full object-cover"
         />
         <div>
@@ -32,22 +26,21 @@ const Profile = () => {
       {/* Stats */}
       <div className="flex justify-around text-center font-semibold">
         <div className="p-2 cursor-pointer hover:bg-gray-200 bg-gray-100 rounded-xl">
-          <p className="text-sm">{user.thread.length}</p>
+          <p className="text-sm">{user.thread?.length || 0}</p>
           <p className="text-xs text-gray-500">Posts</p>
         </div>
         <div className="p-2 cursor-pointer hover:bg-gray-200 bg-gray-100 rounded-xl">
-          <p className="text-sm">{user.followers.length}</p>
+          <p className="text-sm">{user.followers?.length || 0}</p>
           <p className="text-xs text-gray-500">Followers</p>
         </div>
         <div className="p-2 cursor-pointer hover:bg-gray-200 bg-gray-100 rounded-xl">
-          <p className="text-sm">{user.followers.length}</p>
+          <p className="text-sm">{user.Following?.length || 0}</p>
           <p className="text-xs text-gray-500">Following</p>
         </div>
       </div>
 
       {/* Bio */}
       <div className="text-sm space-y-1 px-1 text-center">
-        <p className="font-semibold"></p>
         <p className="text-gray-600">{user.bio}</p>
       </div>
 
